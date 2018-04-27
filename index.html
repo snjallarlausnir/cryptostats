@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto mt-5">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Coin</th>
+                            <th>Amount</th>
+                            <th>Value BTC</th>
+                            <th>Value USD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $(function() {
+            $.get("./coins.json", function(coins) {
+                $.get("https://api.coinmarketcap.com/v1/ticker/", function(data) {
+                    var total_btc = 0;
+                    var total_usd = 0;
+                    for (var coin of data) {
+                        var symbol = (coin.symbol);
+                        var amount = coins[symbol];
+                        if (amount) {
+                            var price_usd = Number(amount) * Number(coin.price_usd);
+                            var price_btc = Number(amount) * Number(coin.price_btc);
+                            total_usd += price_usd;
+                            total_btc += price_btc;
+                            var row = $(
+                                "<tr><td>" + coin.name + "</td><td>" + amount + "</td><td>" + price_btc +
+                                "</td><td>" + price_usd + "</td></tr>"
+                            );
+                            $(".table > tbody").append(row);
+                        }
+                    }
+                    var row = $(
+                        "<tr><td>Total</td><td></td><td>" + total_btc +
+                        "</td><td>" + total_usd + "</td></tr>"
+                    );
+                    $(".table > tbody").append(row);
+                })
+            })
+        });
+    </script>
+</body>
